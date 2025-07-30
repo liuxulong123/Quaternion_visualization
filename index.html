@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>四元数可视化理解</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>四元数可视化理解</h1>
+            <p>通过旋转轴和旋转角理解四元数</p>
+        </header>
+
+        <div class="main-content">
+            <!-- 3D可视化区域 -->
+            <div class="visualization-container">
+                <div id="three-container"></div>
+                <div class="info-overlay">
+                    <div class="quaternion-display">
+                        <h3>当前四元数</h3>
+                        <div class="quaternion-values">
+                            <div>w = <span id="q-w">1.000</span></div>
+                            <div>x = <span id="q-x">0.000</span></div>
+                            <div>y = <span id="q-y">0.000</span></div>
+                            <div>z = <span id="q-z">0.000</span></div>
+                        </div>
+                        <div class="magnitude">
+                            |q| = <span id="q-magnitude">1.000</span>
+                        </div>
+                        <div class="performance-info">
+                            <span id="performance-info">FPS: --</span>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- 控制面板 -->
+            <div class="control-panel">
+                <div class="section">
+                    <h3>旋转轴 (单位向量)</h3>
+                    <div class="axis-controls">
+                        <div class="input-group">
+                            <label>X:</label>
+                            <input type="number" id="axis-x" value="1" step="0.1" min="-1" max="1">
+                        </div>
+                        <div class="input-group">
+                            <label>Y:</label>
+                            <input type="number" id="axis-y" value="0" step="0.1" min="-1" max="1">
+                        </div>
+                        <div class="input-group">
+                            <label>Z:</label>
+                            <input type="number" id="axis-z" value="0" step="0.1" min="-1" max="1">
+                        </div>
+                        <button id="normalize-axis">标准化</button>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h3>旋转角度</h3>
+                    <div class="angle-control">
+                        <input type="range" id="angle-slider" min="0" max="360" value="0" step="1">
+                        <div class="angle-display">
+                            <span id="angle-value">0</span>°
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h3>预设例子</h3>
+                    <div class="preset-buttons">
+                        <button class="preset-btn" data-preset="example1">
+                            例子1: 绕X轴转60°
+                        </button>
+                        <button class="preset-btn" data-preset="example2">
+                            例子2: 绕Y轴转180°
+                        </button>
+                        <button class="preset-btn" data-preset="example3">
+                            例子3: 绕斜轴转90°
+                        </button>
+                        <button class="preset-btn" data-preset="example4">
+                            例子4: 绕Y轴转90°
+                        </button>
+                        <button class="preset-btn" data-preset="example5">
+                            例子5: 绕Z轴转120°
+                        </button>
+                        <button class="preset-btn" data-preset="example6">
+                            例子6: 绕(1,1,1)轴转120°
+                        </button>
+                        <button class="preset-btn" data-preset="example7">
+                            例子7: 绕(1,0,1)轴转90°
+                        </button>
+                        <button class="preset-btn" data-preset="example8">
+                            例子8: 绕X轴转270°
+                        </button>
+                        <button class="preset-btn" data-preset="reset">
+                            重置
+                        </button>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h3>动画控制</h3>
+                    <div class="animation-controls">
+                        <button id="play-pause">播放动画</button>
+                        <div class="speed-control">
+                            <label>速度:</label>
+                            <input type="range" id="speed-slider" min="0.1" max="2" value="1" step="0.1">
+                            <span id="speed-value">1.0</span>x
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h3>键盘快捷键</h3>
+                    <div class="keyboard-shortcuts">
+                        <div class="shortcut">
+                            <kbd>空格</kbd> 播放/暂停
+                        </div>
+                        <div class="shortcut">
+                            <kbd>1</kbd>-<kbd>8</kbd> 预设例子
+                        </div>
+                        <div class="shortcut">
+                            <kbd>R</kbd> 重置
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 理论说明 -->
+        <div class="theory-section">
+            <h2>理论说明</h2>
+            <div class="theory-content">
+                <div class="formula-box">
+                    <h4>四元数公式：</h4>
+                    <p><strong>w = cos(θ/2)</strong></p>
+                    <p><strong>(x, y, z) = 轴方向 × sin(θ/2)</strong></p>
+                    <p>其中 θ 是旋转角度，轴方向是单位向量</p>
+                </div>
+
+                <div class="examples">
+                    <h4>八个经典例子：</h4>
+                    <div class="example">
+                        <strong>例子1：</strong>绕X轴转60° → (0.866, 0.5, 0, 0)
+                    </div>
+                    <div class="example">
+                        <strong>例子2：</strong>绕Y轴转180° → (0, 0, 1, 0)
+                    </div>
+                    <div class="example">
+                        <strong>例子3：</strong>绕斜轴(1,1,0)转90° → (0.707, 0.5, 0.5, 0)
+                    </div>
+                    <div class="example">
+                        <strong>例子4：</strong>绕Y轴转90° → (0.707, 0, 0.707, 0)
+                    </div>
+                    <div class="example">
+                        <strong>例子5：</strong>绕Z轴转120° → (0.5, 0, 0, 0.866)
+                    </div>
+                    <div class="example">
+                        <strong>例子6：</strong>绕(1,1,1)轴转120° → (0.5, 0.5, 0.5, 0.5)
+                    </div>
+                    <div class="example">
+                        <strong>例子7：</strong>绕(1,0,1)轴转90° → (0.707, 0.5, 0, 0.5)
+                    </div>
+                    <div class="example">
+                        <strong>例子8：</strong>绕X轴转270° → (0.259, -0.966, 0, 0)
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
